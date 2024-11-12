@@ -11,15 +11,14 @@
     }
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^latest",
-    "electron-builder": "^latest"
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
   }
 }
