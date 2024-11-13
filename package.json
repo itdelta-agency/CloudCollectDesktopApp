@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "type": "module",
   "build": {
     "appId": "com.cloudcollect.desktop",
     "productName": "CloudCollectApp",
@@ -20,5 +21,9 @@
   "devDependencies": {
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "firebase": "^11.0.1",
+    "node-fetch": "^3.3.2"
   }
 }
