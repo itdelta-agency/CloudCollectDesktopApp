@@ -54,3 +54,21 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+const { Notification } = require('electron');
+const axios = require('axios');
+
+function fetchNotifications() {
+    axios.get('http://localhost/electron-api/notifications')
+        .then(response => {
+            const messages = response.data;
+            messages.forEach(message => {
+                new Notification({
+                    title: 'Новое уведомление',
+                    body: message
+                }).show();
+            });
+        })
+        .catch(error => console.error('Ошибка при получении уведомлений:', error));
+}
+
+setInterval(fetchNotifications, 3000);
