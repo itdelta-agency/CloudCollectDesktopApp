@@ -58,8 +58,9 @@ const { Notification } = require('electron');
 const axios = require('axios');
 
 function fetchNotifications() {
-    axios.get('http://localhost/electron-api/notifications')
+    axios.get('http://localhost/electron-api/notifications/rrr')
         .then(response => {
+            console.log(response.data)
             const messages = response.data;
             messages.forEach(message => {
                 new Notification({
