@@ -1,5 +1,7 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge } = require('electron/renderer')
 
-contextBridge.exposeInMainWorld('api', {
-    openLink: (url) => ipcRenderer.send('open-link', url) // отправляем событие на открытие ссылки
-});
+contextBridge.exposeInMainWorld('versions', {
+    node: () => process.versions.node,
+    chrome: () => process.versions.chrome,
+    electron: () => process.versions.electron
+})

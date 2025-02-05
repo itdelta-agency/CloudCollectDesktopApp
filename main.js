@@ -1,7 +1,7 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, shell, ipcMain } = require('electron')
+const { app, BrowserWindow } = require('electron')
 const path = require('node:path')
 
 const createWindow = () => {
@@ -16,21 +16,8 @@ const createWindow = () => {
 
     // and load the index.html of the app.
     mainWindow.loadFile('index.html')
-
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
-
-    // Обработка клика на логотип
-    // mainWindow.webContents.on('new-window', (event, url) => {
-    //     event.preventDefault();
-    //     shell.openExternal(url); // Открывает сайт в браузере
-    // });
 }
 
-// Открываем ссылку в браузере по умолчанию при получении события от renderer process
-ipcMain.on('open-link', (event, url) => {
-    shell.openExternal(url);
-});
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

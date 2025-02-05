@@ -1,30 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudCollect</title>
-    <style>
-        body, html {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #000000;
-        }
-        #logo {
-            cursor: pointer;
-        }
-    </style>
+    <meta charset="UTF-8" />
+    <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'"
+    />
+    <meta
+            http-equiv="X-Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'"
+    />
+    <title>Hello from Electron renderer!</title>
 </head>
 <body>
-<img id="logo" src="https://www.cloudcollect.dk/wp-content/uploads/2020/05/cclogo-white-1.png" alt="CloudCollect Logo" width="200">
-<script>
-    document.getElementById('logo').addEventListener('click', () => {
-        window.api.openLink('https://cloudcollect.dk/');
-    });
-</script>
+<h1>Hello from Electron renderer!</h1>
+<p>👋</p>
+<p id="info"></p>
 </body>
+<script src="./renderer.js"></script>
 </html>
