@@ -23,7 +23,7 @@ const createWindow = () => {
 const createTray = () => {
     // Make the application minimize to Tray
 
-    const icon = nativeImage.createFromPath('assets/icon.png') //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
+    const icon = nativeImage.createFromPath('assets/icon.ico') //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
     console.log('Иконка пуста?', icon.isEmpty())
 
     tray = new Tray(icon)
