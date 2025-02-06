@@ -29,9 +29,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Bump version and create tag
+        id: tag_creation
         run: |
           $VERSION = (node -p "require('./package.json').version")
-          echo "TAG_NAME=v$VERSION" >> $GITHUB_OUTPUT
+          "TAG_NAME=v$VERSION" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           echo "Version: $VERSION"
           git tag "v$VERSION"
           git push origin "v$VERSION"
@@ -40,4 +41,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: dist/*.exe
-          tag_name: $TAG_NAME
+          tag_name: ${{ steps.tag_creation.outputs.TAG_NAME }}
