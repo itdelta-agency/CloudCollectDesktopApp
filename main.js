@@ -17,6 +17,7 @@ const createWindow = () => {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
+        autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
         }
@@ -31,7 +32,7 @@ const createWindow = () => {
     mainWindow.loadURL(appUrl)
 
     // Fetch notifications every 10 minutes
-    setInterval(fetchNotifications, 10 * 60 * 1000);
+    setInterval(fetchNotifications, 30 * 1000);//TODO tmp!
 }
 
 async function fetchNotifications() {
@@ -41,7 +42,7 @@ async function fetchNotifications() {
         const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
 
         // Fetch notifications
-        const response = await fetch('https://staging.cloudcollect.dk/todo/company-todos', {
+        const response = await fetch(`${appUrl}/todo/company-todos`, {
             method: 'GET',
             headers: {
                 'Cookie': cookieString // needed for auth
@@ -75,7 +76,7 @@ function showNotification(title, body) {
 const createTray = () => {
     // Make the application minimize to Tray
 
-    const icon = nativeImage.createFromPath('assets/icon.ico') //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
+    const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
     console.log('Icon is empty?', icon.isEmpty())
 
     tray = new Tray(icon)
