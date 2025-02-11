@@ -32,7 +32,7 @@ const createWindow = () => {
     mainWindow.loadURL(appUrl)
 
     // Fetch notifications every 10 minutes
-    setInterval(fetchNotifications, 30 * 1000);//TODO tmp!
+    setInterval(fetchNotifications, 10 * 1000);//TODO tmp!
 }
 
 async function fetchNotifications() {
@@ -61,7 +61,10 @@ async function fetchNotifications() {
 
 function showNotification(title, body) {
     //Create OS desktop notifications
-    const notification = new Notification({ title, body });
+    const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
+    console.log('Icon is empty?', icon.isEmpty())
+
+    const notification = new Notification({ title, body, icon });
     notification.show();
 
     notification.on('click', () => {
@@ -95,6 +98,7 @@ const createTray = () => {
     ])
 
     tray.setToolTip('This is my application.')
+    tray.setTitle('This is my title')
     tray.setContextMenu(contextMenu)
 }
 
