@@ -15,6 +15,7 @@ const appUrl = 'https://staging.cloudcollect.dk/';
 const createWindow = () => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
+        icon: path.join(__dirname, 'assets/icon.png'),
         width: 800,
         height: 600,
         autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
@@ -79,7 +80,7 @@ function showNotification(title, body) {
 const createTray = () => {
     // Make the application minimize to Tray
 
-    const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
+    const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.png')) //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
     console.log('Icon is empty?', icon.isEmpty())
 
     tray = new Tray(icon)
