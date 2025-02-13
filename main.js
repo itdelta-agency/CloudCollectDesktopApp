@@ -11,7 +11,9 @@ app.setLoginItemSettings({
 
 let tray, mainWindow
 
-const appUrl = 'https://staging.cloudcollect.dk/';
+const FRONTEND_URL = 'https://cc.cloudcollect.dk/login';
+const BACKEND_URL = 'https://staging.cloudcollect.dk';
+
 const createWindow = () => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -33,7 +35,7 @@ const createWindow = () => {
     // });
 
     // and load the SPA
-    mainWindow.loadURL(appUrl)
+    mainWindow.loadURL(FRONTEND_URL)
 
     // Fetch notifications every 10 minutes
     setInterval(fetchNotifications, 10 * 1000);//TODO tmp!
@@ -42,11 +44,11 @@ const createWindow = () => {
 async function fetchNotifications() {
     try {
         // Get cookies from default app session
-        const cookies = await session.defaultSession.cookies.get({url: appUrl});
+        const cookies = await session.defaultSession.cookies.get({url: BACKEND_URL});
         const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
 
         // Fetch notifications
-        const response = await fetch(`${appUrl}/todo/company-todos`, {
+        const response = await fetch(`${BACKEND_URL}/todo/company-todos`, {
             method: 'GET',
             headers: {
                 'Cookie': cookieString // needed for auth
@@ -111,6 +113,19 @@ const createTray = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+
+
+
+    //const ses = session.defaultSession;
+
+    /*ses.clearStorageData({ storages: ['cookies'] }).then(() => {
+        console.log("Все куки очищены!");
+    }).catch(err => {
+        console.error("Ошибка очистки куков:", err);
+    });*/
+
+
+
     createWindow()
     createTray()
 
@@ -119,6 +134,8 @@ app.whenReady().then(() => {
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
+
+
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
