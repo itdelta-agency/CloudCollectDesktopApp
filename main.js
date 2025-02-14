@@ -11,7 +11,9 @@ app.setLoginItemSettings({
 
 let tray, mainWindow
 
-const appUrl = 'https://staging.cloudcollect.dk/';
+const FRONTEND_URL = 'https://cc.cloudcollect.dk';
+const BACKEND_URL = 'https://staging.cloudcollect.dk';
+
 const createWindow = () => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -23,7 +25,7 @@ const createWindow = () => {
         resizable: true,
         autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
         }
     })
 
@@ -33,20 +35,20 @@ const createWindow = () => {
     // });
 
     // and load the SPA
-    mainWindow.loadURL(appUrl)
+    mainWindow.loadURL(FRONTEND_URL)
 
     // Fetch notifications every 10 minutes
-    setInterval(fetchNotifications, 10 * 1000);//TODO tmp!
+    setInterval(fetchNotifications, 30 * 1000);//TODO tmp!
 }
 
 async function fetchNotifications() {
     try {
         // Get cookies from default app session
-        const cookies = await session.defaultSession.cookies.get({url: appUrl});
+        const cookies = await session.defaultSession.cookies.get({url: BACKEND_URL});
         const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
 
         // Fetch notifications
-        const response = await fetch(`${appUrl}/todo/company-todos`, {
+        const response = await fetch(`${BACKEND_URL}/todo/company-todos`, {
             method: 'GET',
             headers: {
                 'Cookie': cookieString // needed for auth
