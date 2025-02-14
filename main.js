@@ -11,7 +11,7 @@ app.setLoginItemSettings({
 
 let tray, mainWindow
 
-const FRONTEND_URL = 'https://cc.cloudcollect.dk/login';
+const FRONTEND_URL = 'https://cc.cloudcollect.dk';
 const BACKEND_URL = 'https://staging.cloudcollect.dk';
 
 const createWindow = () => {
@@ -25,7 +25,7 @@ const createWindow = () => {
         resizable: true,
         autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
         }
     })
 
@@ -38,7 +38,7 @@ const createWindow = () => {
     mainWindow.loadURL(FRONTEND_URL)
 
     // Fetch notifications every 10 minutes
-    setInterval(fetchNotifications, 10 * 1000);//TODO tmp!
+    setInterval(fetchNotifications, 30 * 1000);//TODO tmp!
 }
 
 async function fetchNotifications() {
@@ -113,19 +113,6 @@ const createTray = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-
-
-
-    //const ses = session.defaultSession;
-
-    /*ses.clearStorageData({ storages: ['cookies'] }).then(() => {
-        console.log("Все куки очищены!");
-    }).catch(err => {
-        console.error("Ошибка очистки куков:", err);
-    });*/
-
-
-
     createWindow()
     createTray()
 
@@ -134,8 +121,6 @@ app.whenReady().then(() => {
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
-
-
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
