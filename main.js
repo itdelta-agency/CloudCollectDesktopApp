@@ -4,6 +4,7 @@
 const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification } = require('electron')
 const path = require('node:path')
 require('dotenv').config();
+const player = require('play-sound')();
 
 
 app.setLoginItemSettings({
@@ -42,7 +43,7 @@ const createWindow = () => {
     mainWindow.loadURL(FRONTEND_URL)
 
     // Fetch notifications every 10 minutes
-    setInterval(fetchNotifications, 30 * 1000);//TODO tmp!
+    setInterval(fetchNotifications, 15 * 1000);//TODO tmp!
 }
 
 async function fetchNotifications() {
@@ -77,11 +78,15 @@ function showNotification(notifications, unreadCount) {
         const notification = new Notification({
             title: latestNotification ? latestNotification.title + `(${unreadCount} unread)`  : 'New Notification!',
             body: latestNotification ? latestNotification.message : 'New notification!',
-            silent: false, // beep?,
+            silent: true,
             icon
         });
 
         notification.show();
+
+        player.play(path.join(__dirname, 'assets/notification.wav'), (err) => {
+            if (err) console.log('Error playing sound:', err);
+        });
 
         notification.on('click', () => {
             if (mainWindow) {
