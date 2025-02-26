@@ -3,6 +3,8 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification } = require('electron')
 const path = require('node:path')
+require('dotenv').config();
+
 
 app.setLoginItemSettings({
     openAtLogin: true, //Start app when login to OS
@@ -11,8 +13,10 @@ app.setLoginItemSettings({
 
 let tray, mainWindow
 
-const FRONTEND_URL = 'https://cc.cloudcollect.dk';
-const BACKEND_URL = 'https://staging.cloudcollect.dk';
+const FRONTEND_URL = process.env.FRONTEND_URL;
+const BACKEND_URL = process.env.BACKEND_URL;
+const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //ico for windows, 16×16, 32×32, 48×48, 64×64 and 256×256 in one file
+//console.log('Icon is empty?', icon.isEmpty())
 
 const createWindow = () => {
     // Create the browser window.
@@ -47,47 +51,49 @@ async function fetchNotifications() {
         const cookies = await session.defaultSession.cookies.get({url: BACKEND_URL});
         const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
 
-        // Fetch notifications
-        const response = await fetch(`${BACKEND_URL}/todo/company-todos`, {
-            method: 'GET',
-            headers: {
-                'Cookie': cookieString // needed for auth
-            },
-        });
+        const headers = {'Cookie': cookieString, 'Accept': 'application/json'};
 
-        const notifications = await response.json();
-        if (notifications.length > 0) {
-            showNotification(notifications[0].text, notifications[0].created_at);
-        }
+        const [notificationsResponse, unreadCountResponse] = await Promise.all([
+            fetch(`${BACKEND_URL}/notifications`, {method: 'GET', headers}),
+            fetch(`${BACKEND_URL}/notifications/unread-count`, {method: 'GET', headers})
+        ]);
 
+        const [notificationsData, unreadCountData] = await Promise.all([
+            notificationsResponse.json(),
+            unreadCountResponse.json()
+        ]);
+
+        showNotification(notificationsData.data, unreadCountData.unread_count);
     } catch (error) {
-        console.error('fetchNotifications got error:', error);
+        console.error('Error fetching notifications:', error);
     }
 }
 
-function showNotification(title, body) {
-    //Create OS desktop notifications
-    const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
-    console.log('Icon is empty?', icon.isEmpty())
+function showNotification(notifications, unreadCount) {
+    if (unreadCount > 0) {
+        const latestNotification = notifications[0]; // Get latest notification
 
-    const notification = new Notification({ title, body, icon });
-    notification.show();
+        //Create OS desktop notifications
+        const notification = new Notification({
+            title: latestNotification ? latestNotification.title + `(${unreadCount} unread)`  : 'New Notification!',
+            body: latestNotification ? latestNotification.message : 'New notification!',
+            silent: false, // beep?,
+            icon
+        });
 
-    notification.on('click', () => {
-        if (mainWindow) {
-            mainWindow.show(); // Show window
-            mainWindow.focus();
-        }
-    });
+        notification.show();
+
+        notification.on('click', () => {
+            if (mainWindow) {
+                mainWindow.show(); // Show window
+                mainWindow.focus();
+            }
+        });
+    }
 }
-
 
 const createTray = () => {
     // Make the application minimize to Tray
-
-    const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //TODO change to ico for windows, 16×16, 32×32, 48×48, 64×64 и 256×256 in one file
-    console.log('Icon is empty?', icon.isEmpty())
-
     tray = new Tray(icon)
 
     const contextMenu = Menu.buildFromTemplate([
