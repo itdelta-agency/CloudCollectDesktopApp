@@ -78,7 +78,7 @@ function showNotification(notifications, unreadCount) {
         const notification = new Notification({
             title: latestNotification ? latestNotification.title + `(${unreadCount} unread)`  : 'New Notification!',
             body: latestNotification ? latestNotification.message : 'New notification!',
-            silent: true,
+            silent: false,
             icon
         });
 
