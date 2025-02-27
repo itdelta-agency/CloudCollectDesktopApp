@@ -1,13 +1,17 @@
 {
   "name": "cloudcollectapp",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "description": "",
   "main": "main.js",
   "build": {
     "appId": "com.cloudcollect.desktop",
     "productName": "CloudCollectApp",
     "files": [
-      "assets/**/*"
+      "main.js",
+      "package.json",
+      "preload.js",
+      "assets/**/*",
+      "node_modules/**/*"
     ],
     "win": {
       "target": "nsis",
@@ -26,6 +30,7 @@
     "electron-builder": "^25.1.8"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "play-sound": "^1.1.6"
   }
 }

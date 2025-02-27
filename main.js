@@ -78,15 +78,18 @@ function showNotification(notifications, unreadCount) {
         const notification = new Notification({
             title: latestNotification ? latestNotification.title + `(${unreadCount} unread)`  : 'New Notification!',
             body: latestNotification ? latestNotification.message : 'New notification!',
-            silent: true,
+            silent: false,
             icon
         });
 
         notification.show();
 
-        player.play(path.join(__dirname, 'assets/notification.wav'), (err) => {
-            if (err) console.log('Error playing sound:', err);
-        });
+        // player.play(path.join(__dirname, 'assets/notification.wav'), (err) => {
+        //     if (err) {
+        //         console.log('Error playing sound:', err);
+        //         console.log('Stack:', err.stack);
+        //     }
+        // });
 
         notification.on('click', () => {
             if (mainWindow) {
