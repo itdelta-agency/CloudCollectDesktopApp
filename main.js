@@ -3,19 +3,23 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell } = require('electron')
 const path = require('node:path')
-require('dotenv').config();
-const player = require('play-sound')();
-
+const fs = require('node:fs')
 
 app.setLoginItemSettings({
     openAtLogin: true, //Start app when login to OS
 });
 
+const configPath = path.join(app.getAppPath(), "config.json");
+const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+
+console.log("FRONTEND_URL:", config.FRONTEND_URL);
+console.log("BACKEND_URL:", config.BACKEND_URL);
+
+const FRONTEND_URL = config.FRONTEND_URL;
+const BACKEND_URL = config.BACKEND_URL;
 
 let tray, mainWindow
 
-const FRONTEND_URL = 'https://cc.cloudcollect.dk';
-const BACKEND_URL = 'https://staging.cloudcollect.dk/api/v1/desktop-app';
 const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //ico for windows, 16×16, 32×32, 48×48, 64×64 and 256×256 in one file
 //console.log('Icon is empty?', icon.isEmpty())
 
@@ -83,13 +87,6 @@ function showNotification(notifications, unreadCount) {
         });
 
         notification.show();
-
-        // player.play(path.join(__dirname, 'assets/notification.wav'), (err) => {
-        //     if (err) {
-        //         console.log('Error playing sound:', err);
-        //         console.log('Stack:', err.stack);
-        //     }
-        // });
 
         notification.on('click', () => {
             if (mainWindow) {
