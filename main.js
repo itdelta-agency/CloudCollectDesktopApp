@@ -14,8 +14,8 @@ app.setLoginItemSettings({
 
 let tray, mainWindow
 
-const FRONTEND_URL = process.env.FRONTEND_URL;
-const BACKEND_URL = process.env.BACKEND_URL;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://cc.cloudcollect.dk';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://staging.cloudcollect.dk/api/v1/desktop-app';
 const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //ico for windows, 16×16, 32×32, 48×48, 64×64 and 256×256 in one file
 //console.log('Icon is empty?', icon.isEmpty())
 
