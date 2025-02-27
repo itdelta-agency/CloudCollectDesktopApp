@@ -1,7 +1,7 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification } = require('electron')
+const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell } = require('electron')
 const path = require('node:path')
 require('dotenv').config();
 const player = require('play-sound')();
@@ -43,7 +43,7 @@ const createWindow = () => {
     mainWindow.loadURL(FRONTEND_URL)
 
     // Fetch notifications every 10 minutes
-    setInterval(fetchNotifications, 15 * 1000);//TODO tmp!
+    setInterval(fetchNotifications, 30 * 1000);//TODO tmp!
 }
 
 async function fetchNotifications() {
@@ -133,6 +133,10 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
 })
+
+ipcMain.on("open-url", (event, url) => {
+    shell.openExternal(url);
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
