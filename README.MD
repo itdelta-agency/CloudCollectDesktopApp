@@ -13,7 +13,7 @@ cd CloudCollectDesktopApp
 ```bash
 npm install
 ```
-3. Create config.json:
+3. Create config.json file (only for non sensetive variables):
 ```json
 {
     "BACKEND_URL":"APP_BACKEND_URL",
