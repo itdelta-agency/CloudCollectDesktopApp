@@ -13,6 +13,13 @@ cd CloudCollectDesktopApp
 ```bash
 npm install
 ```
+3. Create config.json:
+```json
+{
+    "BACKEND_URL":"APP_BACKEND_URL",
+    "FRONTEND_URL":"APP_FRONTEND_URL"
+}
+```
 ## Running the Application
 To start the application in development mode, run:
 ```bash

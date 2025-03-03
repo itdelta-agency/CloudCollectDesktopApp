@@ -2,8 +2,13 @@
 
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell } = require('electron')
+const { autoUpdater } = require("electron-updater")
 const path = require('node:path')
 const fs = require('node:fs')
+const log = require("electron-log")
+
+log.transports.file.level = "info" // Logging level
+autoUpdater.logger = log
 
 app.setLoginItemSettings({
     openAtLogin: true, //Start app when login to OS
@@ -12,8 +17,9 @@ app.setLoginItemSettings({
 const configPath = path.join(app.getAppPath(), "config.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
-console.log("FRONTEND_URL:", config.FRONTEND_URL);
-console.log("BACKEND_URL:", config.BACKEND_URL);
+log.info("CloudCollectDesktopApp statred");
+log.info("FRONTEND_URL:", config.FRONTEND_URL);
+log.info("BACKEND_URL:", config.BACKEND_URL);
 
 const FRONTEND_URL = config.FRONTEND_URL;
 const BACKEND_URL = config.BACKEND_URL;
@@ -43,6 +49,10 @@ const createWindow = () => {
     //     mainWindow.hide(); // Just hide window
     // });
 
+    mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
+        log.error(`Got error while loading: ${errorCode} - ${errorDescription}`);
+    });
+
     // and load the SPA
     mainWindow.loadURL(FRONTEND_URL)
 
@@ -70,7 +80,7 @@ async function fetchNotifications() {
 
         showNotification(notificationsData.data, unreadCountData.unread_count);
     } catch (error) {
-        console.error('Error fetching notifications:', error);
+        log.error("Error fetching notifications:", error);
     }
 }
 
@@ -126,6 +136,25 @@ const createTray = () => {
 app.whenReady().then(() => {
     createWindow()
     createTray()
+
+    // Check for new releases
+    autoUpdater.checkForUpdates();
+
+    // If release available
+    autoUpdater.on("update-available", () => {
+        log.info("New update available");
+    });
+
+    // If release downloaded
+    autoUpdater.on("update-downloaded", () => {
+        log.info("A new version has been downloaded, restarting the app...");
+        autoUpdater.quitAndInstall();
+    });
+
+    // Log errors
+    autoUpdater.on("error", (err) => {
+        log.error("Error while updating the app:", err);
+    });
 
     app.on('activate', () => {
         // On macOS it's common to re-create a window in the app when the
