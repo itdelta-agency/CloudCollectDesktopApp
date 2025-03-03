@@ -44,5 +44,7 @@ jobs:
       - name: Upload Release to GitHub
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*.exe
+          files: |
+            dist/*.exe
+            dist/latest.yml
           tag_name: ${{ steps.tag_creation.outputs.TAG_NAME }}
