@@ -1,6 +1,6 @@
 {
   "name": "cloudcollectapp",
-  "version": "1.1.19",
+  "version": "1.1.20",
   "description": "",
   "main": "main.js",
   "build": {
@@ -16,6 +16,9 @@
         "releaseType": "release"
       }
     ]
+  },
+  "nsis": {
+    "differentialUpdate": true
   },
   "scripts": {
     "start": "electron .",
