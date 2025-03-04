@@ -138,7 +138,7 @@ app.whenReady().then(() => {
     createTray()
 
     // Check for new releases
-    autoUpdater.checkForUpdates();
+    autoUpdater.checkForUpdatesAndNotify();
 
     // If release available
     autoUpdater.on("update-available", () => {
