@@ -41,10 +41,14 @@ jobs:
           git tag "v$VERSION"
           git push origin "v$VERSION"
 
+      - name: List dist folder contents
+        run: ls -lah dist/
+
       - name: Upload Release to GitHub
         uses: softprops/action-gh-release@v1
         with:
           files: |
             dist/*.exe
+            dist/*.blockmap
             dist/latest.yml
           tag_name: ${{ steps.tag_creation.outputs.TAG_NAME }}
