@@ -42,7 +42,7 @@ jobs:
           git push origin "v$VERSION"
 
       - name: List dist folder contents
-        run: ls -lah dist/
+        run: Get-ChildItem -Path dist/ | Format-Table -AutoSize
 
       - name: Upload Release to GitHub
         uses: softprops/action-gh-release@v1
