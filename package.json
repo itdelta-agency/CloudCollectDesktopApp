@@ -1,6 +1,6 @@
 {
   "name": "cloudcollectapp",
-  "version": "1.1.21",
+  "version": "1.1.22",
   "description": "",
   "main": "main.js",
   "build": {
@@ -10,15 +10,15 @@
       "target": "nsis",
       "icon": "assets/icon.ico"
     },
+    "nsis": {
+      "differentialUpdate": false
+    },
     "publish": [
       {
         "provider": "github",
         "releaseType": "release"
       }
     ]
-  },
-  "nsis": {
-    "differentialUpdate": true
   },
   "scripts": {
     "start": "electron .",
