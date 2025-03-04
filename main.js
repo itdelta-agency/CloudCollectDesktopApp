@@ -1,10 +1,11 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell } = require('electron')
+const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell, dialog } = require('electron')
 const { autoUpdater } = require("electron-updater")
 const path = require('node:path')
 const fs = require('node:fs')
+const https = require("https")
 const log = require("electron-log")
 
 log.transports.file.level = "info" // Logging level
@@ -166,6 +167,23 @@ app.whenReady().then(() => {
 ipcMain.on("open-url", (event, url) => {
     shell.openExternal(url);
 });
+
+ipcMain.on("download-pdf", async (event, url) => {
+    const { filePath } = await dialog.showSaveDialog({
+      defaultPath: "document.pdf",
+    });
+  
+    if (!filePath) return; // If a user cancelled download
+  
+    const file = fs.createWriteStream(filePath);
+    https.get(url, (response) => {
+      response.pipe(file);
+      file.on("finish", () => {
+        file.close();
+        event.reply("download-complete", "File downloaded");
+      });
+    });
+  });
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
