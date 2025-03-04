@@ -17,8 +17,7 @@ app.setLoginItemSettings({
 const configPath = path.join(app.getAppPath(), "config.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
-log.info("CloudCollectDesktopApp statred");
-log.info("Temporary log!!!");
+log.info("CloudCollectDesktopApp statred!");
 log.info("FRONTEND_URL:", config.FRONTEND_URL);
 log.info("BACKEND_URL:", config.BACKEND_URL);
 
