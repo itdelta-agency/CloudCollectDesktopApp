@@ -57,7 +57,7 @@ const createWindow = () => {
     mainWindow.loadURL(FRONTEND_URL)
 
     // Fetch notifications every 10 minutes
-    setInterval(fetchNotifications, 30 * 1000);//TODO tmp!
+    setInterval(fetchNotifications, 60 * 1000 * 10);
 }
 
 async function fetchNotifications() {
