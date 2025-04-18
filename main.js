@@ -15,6 +15,9 @@ app.setLoginItemSettings({
     args: ['--autostart'],
 });
 
+app.setName('CloudCollect');
+
+
 const configPath = path.join(app.getAppPath(), "config.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
@@ -137,9 +140,16 @@ const createTray = () => {
         },
     ])
 
-    tray.setToolTip('This is my application.')
-    tray.setTitle('This is my title')
+    tray.setToolTip('CloudCollect')
+    tray.setTitle('CloudCollect')
     tray.setContextMenu(contextMenu)
+
+    tray.on('double-click', () => {
+        if (mainWindow) {
+            mainWindow.show();
+            mainWindow.focus();
+        }
+    });
 }
 
 
