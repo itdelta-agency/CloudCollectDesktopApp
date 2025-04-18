@@ -12,6 +12,7 @@ autoUpdater.logger = log
 
 app.setLoginItemSettings({
     openAtLogin: true, //Start app when login to OS
+    args: ['--autostart'],
 });
 
 const configPath = path.join(app.getAppPath(), "config.json");
@@ -29,6 +30,9 @@ let tray, mainWindow
 const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //ico for windows, 16×16, 32×32, 48×48, 64×64 and 256×256 in one file
 //console.log('Icon is empty?', icon.isEmpty())
 
+const gotAutostartFlag = process.argv.includes('--autostart');
+
+
 const createWindow = () => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -39,10 +43,19 @@ const createWindow = () => {
         minHeight: 768,
         resizable: true,
         autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
+        show: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
         }
     })
+
+    mainWindow.once('ready-to-show', () => {
+        if (!gotAutostartFlag) {
+            mainWindow.show(); // If not autostart, Show
+        } else {
+            mainWindow.hide(); // Else — hide
+        }
+    });
 
     // mainWindow.on('close', (event) => {
     //     event.preventDefault();
