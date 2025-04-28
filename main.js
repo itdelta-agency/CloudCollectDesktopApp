@@ -29,6 +29,7 @@ const FRONTEND_URL = config.FRONTEND_URL;
 const BACKEND_URL = config.BACKEND_URL;
 
 let tray, mainWindow
+let isQuiting = false;
 
 const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //ico for windows, 16×16, 32×32, 48×48, 64×64 and 256×256 in one file
 //console.log('Icon is empty?', icon.isEmpty())
@@ -60,10 +61,12 @@ const createWindow = () => {
         }
     });
 
-    // mainWindow.on('close', (event) => {
-    //     event.preventDefault();
-    //     mainWindow.hide(); // Just hide window
-    // });
+     mainWindow.on('close', (event) => {
+        if (!isQuiting) {
+         event.preventDefault();
+         mainWindow.hide(); // Just hide window
+        }
+     });
 
     mainWindow.webContents.on("did-fail-load", (event, errorCode, errorDescription) => {
         log.error(`Got error while loading: ${errorCode} - ${errorDescription}`);
@@ -136,7 +139,7 @@ const createTray = () => {
         {
             label: 'Quit',
             type: 'normal',
-            click: () => app.quit()
+            click: () => { isQuiting = true; app.quit();}
         },
     ])
 
