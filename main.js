@@ -156,38 +156,54 @@ const createTray = () => {
 }
 
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-    createWindow()
-    createTray()
+const gotTheLock = app.requestSingleInstanceLock();
 
-    // Check for new releases
-    autoUpdater.checkForUpdatesAndNotify();
-
-    // If release available
-    autoUpdater.on("update-available", () => {
-        log.info("New update available");
+if (!gotTheLock) {
+    app.quit(); // If there is already a copy, exit
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // If the user tries to launch a second instance, restore/show the window
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.show();
+            mainWindow.focus();
+        }
     });
 
-    // If release downloaded
-    autoUpdater.on("update-downloaded", () => {
-        log.info("A new version has been downloaded, restarting the app...");
-        autoUpdater.quitAndInstall();
-    });
+    // This method will be called when Electron has finished
+    // initialization and is ready to create browser windows.
+    // Some APIs can only be used after this event occurs.
+    app.whenReady().then(() => {
+        createWindow()
+        createTray()
 
-    // Log errors
-    autoUpdater.on("error", (err) => {
-        log.error("Error while updating the app:", err);
-    });
+        // Check for new releases
+        autoUpdater.checkForUpdatesAndNotify();
 
-    app.on('activate', () => {
-        // On macOS it's common to re-create a window in the app when the
-        // dock icon is clicked and there are no other windows open.
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        // If release available
+        autoUpdater.on("update-available", () => {
+            log.info("New update available");
+        });
+
+        // If release downloaded
+        autoUpdater.on("update-downloaded", () => {
+            log.info("A new version has been downloaded, restarting the app...");
+            autoUpdater.quitAndInstall();
+        });
+
+        // Log errors
+        autoUpdater.on("error", (err) => {
+            log.error("Error while updating the app:", err);
+        });
+
+        app.on('activate', () => {
+            // On macOS it's common to re-create a window in the app when the
+            // dock icon is clicked and there are no other windows open.
+            if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        })
     })
-})
+
+}
 
 ipcMain.on("open-url", (event, url) => {
     shell.openExternal(url);
