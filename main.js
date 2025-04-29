@@ -12,7 +12,7 @@ autoUpdater.logger = log
 
 app.setLoginItemSettings({
     openAtLogin: true, //Start app when login to OS
-    args: ['--autostart'],
+    args: ['--hidden'],
 });
 
 app.setName('CloudCollect');
@@ -34,8 +34,6 @@ let isQuiting = false;
 const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //ico for windows, 16×16, 32×32, 48×48, 64×64 and 256×256 in one file
 //console.log('Icon is empty?', icon.isEmpty())
 
-const gotAutostartFlag = process.argv.includes('--autostart');
-
 
 const createWindow = () => {
     // Create the browser window.
@@ -54,11 +52,9 @@ const createWindow = () => {
     })
 
     mainWindow.once('ready-to-show', () => {
-        if (!gotAutostartFlag) {
-            mainWindow.show(); // If not autostart, Show
-        } else {
-            mainWindow.hide(); // Else — hide
-        }
+        if (!process.argv.includes('--hidden')) {
+            mainWindow.show();
+          }
     });
 
      mainWindow.on('close', (event) => {
@@ -174,7 +170,10 @@ if (!gotTheLock) {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(() => {
-        createWindow()
+        setTimeout(() => {
+            createWindow();
+          }, 1000);
+       
         createTray()
 
         // Check for new releases
