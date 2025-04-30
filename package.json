@@ -1,6 +1,6 @@
 {
   "name": "cloudcollectapp",
-  "version": "1.1.35",
+  "version": "1.1.36",
   "description": "",
   "main": "main.js",
   "build": {
@@ -10,6 +10,13 @@
       "target": "nsis",
       "icon": "assets/icon.ico",
       "artifactName": "CloudCollectApp-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": true, 
+      "perMachine": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CloudCollectApp"
     },
     "publish": [
       {
