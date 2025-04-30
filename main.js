@@ -208,6 +208,25 @@ ipcMain.on("open-url", (event, url) => {
     shell.openExternal(url);
 });
 
+ipcMain.on("open-pdf", (event, url) => {
+    const child = new BrowserWindow({
+      modal:false,  
+      width: 1024,
+      height: 768,
+      resizable: true,        
+      minimizable: true,
+      maximizable: true,     
+      fullscreenable: true,
+      autoHideMenuBar: true,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+      }
+    });
+  
+    child.loadURL(url);
+  });
+
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
