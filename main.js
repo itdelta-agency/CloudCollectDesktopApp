@@ -15,7 +15,7 @@ app.setLoginItemSettings({
     args: ['--hidden'],
 });
 
-app.setName('CloudCollect');
+//app.setName('CloudCollect');
 
 
 const configPath = path.join(app.getAppPath(), "config.json");
@@ -44,7 +44,8 @@ const createWindow = () => {
         minWidth: 1024,
         minHeight: 768,
         resizable: true,
-        //autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
+        title: `CloudCollectApp v${app.getVersion()}`,
+        autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
         show: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -217,14 +218,20 @@ if (!gotTheLock) {
     app.whenReady().then(() => {
 
         setTimeout(() => {
+            //Try use set timeout to fix app blinking
             createWindow();
           }, 1000);
        
         createAppMenu()
         createTray()
 
-        // Check for new releases
+        // Check for new releases at app start
         autoUpdater.checkForUpdatesAndNotify();
+
+         // Check for updates every 6 hours
+        setInterval(() => {
+            autoUpdater.checkForUpdatesAndNotify();
+        }, 1000 * 60 * 60 * 6); 
 
         // If release available
         autoUpdater.on("update-available", () => {
