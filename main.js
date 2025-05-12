@@ -1,7 +1,7 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell } = require('electron')
+const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell, dialog } = require('electron')
 const { autoUpdater } = require("electron-updater")
 const path = require('node:path')
 const fs = require('node:fs')
@@ -44,7 +44,7 @@ const createWindow = () => {
         minWidth: 1024,
         minHeight: 768,
         resizable: true,
-        autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
+        //autoHideMenuBar: true, // Auto hide the menu bar unless the Alt key is pressed
         show: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -151,6 +151,51 @@ const createTray = () => {
     });
 }
 
+const createAppMenu = () => {
+    const template = [
+        {
+          label: 'CloudCollectApp',
+          submenu: [
+            {
+              label: 'About',
+              accelerator: 'F1',
+              click: () => {
+                dialog.showMessageBox({
+                  type: 'info',
+                  title: 'About CloudCollectApp',
+                  message: `CloudCollectApp\nVersion: ${app.getVersion()}`,
+                  buttons: ['OK']
+                });
+              }
+            },
+            {
+              label: 'Toggle Debug Tools',
+              accelerator: 'F12',
+              click: () => {
+                const focusedWindow = BrowserWindow.getFocusedWindow();
+                if (focusedWindow) {
+                  focusedWindow.webContents.toggleDevTools();
+                }
+              }
+            },
+            {
+              label: 'Reload App',
+              accelerator: 'CmdOrCtrl+R',
+              click: () => {
+                const focusedWindow = BrowserWindow.getFocusedWindow();
+                if (focusedWindow) {
+                  focusedWindow.reload();
+                }
+              }
+            },
+          ]
+        }
+      ];
+    
+      const menu = Menu.buildFromTemplate(template);
+      Menu.setApplicationMenu(menu);
+  }
+
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -170,10 +215,12 @@ if (!gotTheLock) {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(() => {
+
         setTimeout(() => {
             createWindow();
           }, 1000);
        
+        createAppMenu()
         createTray()
 
         // Check for new releases
