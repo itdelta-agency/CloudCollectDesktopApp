@@ -1,47 +1,31 @@
-name: Build MSIX for Microsoft Store
+name: Build MSIX with electron-packager
 
 on:
   push:
-    branches: [ windows-store ]
+    branches: [ store-release ]
   workflow_dispatch:
 
 jobs:
-  build-windows-store:
+  build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build unpacked Windows app
-        run: npm run dist -- -w --x64 --dir
+      - name: Package app (electron-packager)
+        run: npm run pack
 
-      - name: Install electron-windows-store globally
-        run: npm install -g electron-windows-store
+      - name: Convert to MSIX (electron-windows-store)
+        run: npm run msix
 
-      - name: Convert to AppX/MSIX
-        run: >
-          electron-windows-store 
-          --input-directory dist/win-unpacked 
-          --output-directory store-app 
-          --package-version 1.0.0.0 
-          --package-name CloudCollectApp 
-          --identity-name CloudCollectApp 
-          --publisher-display-name "Your Company Name" 
-          --publisher "CN=Your-Publisher-From-Partner-Center" 
-          --windows-kit "C:\\Program Files (x86)\\Windows Kits\\10" 
-          --dev-cert
-
-      - name: Upload MSIX/AppX package
-        uses: actions/upload-artifact@v4
+      - name: Upload MSIX package
+        uses: actions/upload-artifact@v3
         with:
           name: msix-package
           path: store-app/*
