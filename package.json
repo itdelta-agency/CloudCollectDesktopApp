@@ -11,17 +11,22 @@
       "icon": "assets/icon.ico",
       "artifactName": "CloudCollectApp-Setup-${version}.${ext}"
     },
-    "nsis": {
-      "oneClick": true, 
-      "perMachine": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "CloudCollectApp"
+    "msix": {
+      "displayName": "CloudCollectApp",
+      "identityName": "com.cloudcollect.desktop",
+      "packageName": "CloudCollectApp",
+      "publisherDisplayName": "Your Company Name",
+      "publisher": "CN=YOUR-COMPANY-NAME",
+      "backgroundColor": "#ffffff",
+      "startMenu": true,
+      "startOnUserLogin": true,
+      "store": true
     }
   },
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:store": "electron-builder --win msix"
   },
   "keywords": [],
   "author": "",
