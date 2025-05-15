@@ -2,7 +2,7 @@ name: Build MSIX with electron-packager
 
 on:
   push:
-    branches: [ windows-store ]
+    branches: [ windows-store111 ]
   workflow_dispatch:
 
 jobs:

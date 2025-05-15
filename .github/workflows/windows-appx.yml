@@ -1,0 +1,31 @@
+name: Build AppX for Microsoft Store
+
+on:
+  push:
+    branches: [ windows-store ]
+  workflow_dispatch:
+
+jobs:
+  build-appx:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build .appx package
+        run: npm run dist
+
+      - name: Upload AppX package
+        uses: actions/upload-artifact@v4
+        with:
+          name: appx-package
+          path: dist/*.appx

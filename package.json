@@ -7,22 +7,15 @@
     "appId": "com.cloudcollect.desktop",
     "productName": "CloudCollectApp",
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico",
-      "artifactName": "CloudCollectApp-Setup-${version}.${ext}"
+      "target": ["appx"],
+      "icon": "assets/icon.ico"
     },
-    "msix": {
-      "displayName": "CloudCollectApp",
-      "identityName": "com.cloudcollect.desktop",
-      "packageName": "CloudCollectApp",
+    "appx": {
+      "publisher": "CN=YourPublisherFromPartnerCenter",
       "publisherDisplayName": "Your Company Name",
-      "publisher": "CN=YOUR-COMPANY-NAME",
-      "backgroundColor": "#ffffff",
-      "startMenu": true,
-      "startOnUserLogin": true,
-      "store": true
-    }
-  },
+      "identityName": "CloudCollectApp",
+      "backgroundColor": "#ffffff"
+   },
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
