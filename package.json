@@ -17,13 +17,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "CloudCollectApp"
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "releaseType": "release"
-      }
-    ]
+    }
   },
   "scripts": {
     "start": "electron .",
@@ -37,7 +31,6 @@
     "electron-builder": "^25.1.8"
   },
   "dependencies": {
-    "electron-log": "^5.3.1",
-    "electron-updater": "^6.3.9"
+    "electron-log": "^5.3.1"
   }
 }

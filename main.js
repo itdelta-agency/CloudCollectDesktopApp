@@ -2,13 +2,11 @@
 
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell, dialog } = require('electron')
-const { autoUpdater } = require("electron-updater")
 const path = require('node:path')
 const fs = require('node:fs')
 const log = require("electron-log")
 
 log.transports.file.level = "info" // Logging level
-autoUpdater.logger = log
 
 app.setLoginItemSettings({
     openAtLogin: true, //Start app when login to OS
@@ -224,31 +222,7 @@ if (!gotTheLock) {
        
         createAppMenu()
         createTray()
-
-        // Check for new releases at app start
-        autoUpdater.checkForUpdatesAndNotify();
-
-         // Check for updates every 6 hours
-        setInterval(() => {
-            autoUpdater.checkForUpdatesAndNotify();
-        }, 1000 * 60 * 60 * 6); 
-
-        // If release available
-        autoUpdater.on("update-available", () => {
-            log.info("New update available");
-        });
-
-        // If release downloaded
-        autoUpdater.on("update-downloaded", () => {
-            log.info("A new version has been downloaded, restarting the app...");
-            autoUpdater.quitAndInstall();
-        });
-
-        // Log errors
-        autoUpdater.on("error", (err) => {
-            log.error("Error while updating the app:", err);
-        });
-
+        
         app.on('activate', () => {
             // On macOS it's common to re-create a window in the app when the
             // dock icon is clicked and there are no other windows open.
