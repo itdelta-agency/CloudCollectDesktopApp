@@ -41,7 +41,7 @@ jobs:
           --dev-cert
 
       - name: Upload MSIX/AppX package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: msix-package
           path: store-app/*
