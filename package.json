@@ -28,7 +28,7 @@
     "dist": "electron-builder",
     "dist:store": "electron-builder --win msix",
     "pack": "electron-packager . CloudCollectApp --platform=win32 --arch=x64 --out=dist --overwrite",
-    "msix": "echo Y | electron-windows-store --input-directory dist/CloudCollectApp-win32-x64 --output-directory store-app --package-version 1.0.0.0 --package-name CloudCollectApp --identity-name CloudCollectApp --publisher CN=Your-Publisher --publisher-display-name \"Your Company\""
+    "msix": "no | electron-windows-store --input-directory dist/CloudCollectApp-win32-x64 --output-directory store-app --package-version 1.0.0.0 --package-name CloudCollectApp --identity-name CloudCollectApp --publisher CN=Your-Publisher --publisher-display-name \"Your Company\""
   },
   "keywords": [],
   "author": "",
