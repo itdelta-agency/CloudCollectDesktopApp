@@ -25,7 +25,7 @@ jobs:
         run: npm run msix
 
       - name: Upload MSIX package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: msix-package
           path: store-app/*
