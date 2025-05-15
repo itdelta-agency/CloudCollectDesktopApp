@@ -7,7 +7,9 @@
     "appId": "com.cloudcollect.desktop",
     "productName": "CloudCollectApp",
     "win": {
-      "target": ["appx"],
+      "target": [
+        "appx"
+      ],
       "icon": "assets/icon.ico"
     },
     "appx": {
@@ -15,7 +17,8 @@
       "publisherDisplayName": "Your Company Name",
       "identityName": "CloudCollectApp",
       "backgroundColor": "#ffffff"
-   },
+    }
+  },
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
