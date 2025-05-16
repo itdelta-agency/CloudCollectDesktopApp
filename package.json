@@ -31,6 +31,7 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^33.2.0",
+    "electron-builder": "^26.0.12",
     "electron-packager": "^17.1.2",
     "electron-windows-store": "^2.1.0"
   },
