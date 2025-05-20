@@ -5,6 +5,7 @@ const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcM
 const { autoUpdater } = require("electron-updater")
 const path = require('node:path')
 const fs = require('node:fs')
+const os = require('os')
 const sharp = require('sharp');
 const toIco = require('png-to-ico');
 const Store = require('electron-store');
@@ -95,7 +96,7 @@ async function fetchNotifications() {
 
       const notifications = (await notificationsResponse.json()).data || [];
       const unreadCount = (await unreadCountResponse.json()).unread_count || 0;
-      console.log("Unread notifications count", unreadCount);
+      log.info("Unread notifications count", unreadCount);
 
       if (unreadCount === 0) {
         store.set('shown_notification_counts', {});
@@ -147,35 +148,38 @@ function setTrayIconDefault() {
 
 async function setTrayIconWithCount(unreadCount) {
   const basePngPath = path.join(process.resourcesPath, 'icon-256.png');
-  const outputPath = path.join(app.getPath('userData'), `tray-badge-${unreadCount}.ico`);
-  await generateTrayIconWithCount(basePngPath, unreadCount, outputPath);
-  tray.setImage(outputPath);
+  const outputIcoPath = path.join(app.getPath('userData'), `tray-badge-${unreadCount}.ico`);
+  await generateTrayIconWithCount(basePngPath, unreadCount, outputIcoPath);
+  tray.setImage(nativeImage.createFromPath(outputIcoPath));
 }
 
 // --- Generate tray icon with badge ---
 
 async function generateTrayIconWithCount(basePngPath, count, outputIcoPath) {
-  const badgeSvg = `
+    const badgeSvg = `
     <svg width="256" height="256">
       <circle cx="220" cy="36" r="28" fill="red" />
       <text x="220" y="45" font-size="32" text-anchor="middle" fill="white" font-family="sans-serif">${count}</text>
     </svg>
   `;
 
-  const base = await sharp(basePngPath)
+  const basePngBuffer = await sharp(basePngPath)
     .composite([{ input: Buffer.from(badgeSvg), top: 0, left: 0 }])
     .png()
     .toBuffer();
 
-    const tempPng = path.join(__dirname, "temp-tray-badge.png");
-    fs.writeFileSync(tempPng, base);
-  
-    const icoBuffer = await toIco([tempPng]);
-    fs.writeFileSync(outputIcoPath, icoBuffer);
-  
-    fs.unlinkSync(tempPng); // delete tmp PNG
-  
-    console.log(`Created icon: ${outputIcoPath}`);
+  // save temp icon to system tmp dir
+  const tempPng = path.join(os.tmpdir(), `tray-badge-${count}.png`);
+  fs.writeFileSync(tempPng, basePngBuffer);
+
+  const icoBuffer = await toIco([tempPng]);
+  fs.writeFileSync(outputIcoPath, icoBuffer);
+
+  fs.unlink(tempPng, err => {
+    if (err) log.warn("Temp PNG cleanup failed:", err);
+  });
+
+  log.info(`Created tray icon with badge: ${outputIcoPath}`);
 }
 
 const createTray = () => {
