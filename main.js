@@ -5,6 +5,9 @@ const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcM
 const path = require('node:path')
 const fs = require('node:fs')
 const log = require("electron-log")
+const Store = require('electron-store');
+const store = new Store();
+
 
 log.transports.file.level = "info" // Logging level
 
@@ -92,33 +95,64 @@ async function fetchNotifications() {
             unreadCountResponse.json()
         ]);
 
-        showNotification(notificationsData.data, unreadCountData.unread_count);
+
+        if (unreadCountData.unread_count === 0) {
+          store.set('shown_notification_counts', {});
+          setTrayIconDefault();
+        } else {
+          showNotification(notificationsData.data, unreadCountData.unread_count);
+        }        
     } catch (error) {
         log.error("Error fetching notifications:", error);
     }
 }
 
 function showNotification(notifications, unreadCount) {
-    if (unreadCount > 0) {
-        const latestNotification = notifications[0]; // Get latest notification
 
-        //Create OS desktop notifications
-        const notification = new Notification({
-            title: latestNotification ? latestNotification.title + `(${unreadCount} unread)`  : 'New Notification!',
-            body: latestNotification ? latestNotification.message : 'New notification!',
-            silent: false,
-            icon
-        });
+  if (!notifications || notifications.length === 0) return;
 
-        notification.show();
+  const latest = notifications[0]; // show only latest
+  const shownMap = store.get('shown_notification_counts') || {};
+  
+  const shownCount = shownMap[latest.id] || 0;
 
-        notification.on('click', () => {
-            if (mainWindow) {
-                mainWindow.show(); // Show window
-                mainWindow.focus();
-            }
-        });
-    }
+  if (shownCount < 2) {
+    const notification = new Notification({
+      title: `${latest.title} (${unreadCount} unread)`,
+      body: latest.message,
+      silent: false,
+      icon
+    });
+
+    notification.show();
+    shownMap[latest.id] = shownCount + 1;
+    store.set('shown_notification_counts', shownMap);
+
+    notification.on('click', () => {
+      if (mainWindow) {
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    });
+  }
+
+  //console.log("MAP", shownMap);
+ 
+  // Has unread, show indicator
+  if (unreadCount > 0) {
+    setTrayIconUnread();
+  }
+}
+
+
+function setTrayIconUnread() {
+  console.log("tray-unread.png");
+  //tray.setImage(path.join(__dirname, 'assets', 'tray-unread.png')); // с красной точкой
+}
+
+function setTrayIconDefault() {
+  console.log("tray.png");
+  //tray.setImage(path.join(__dirname, 'assets', 'tray.png')); // обычная
 }
 
 const createTray = () => {
@@ -254,6 +288,12 @@ ipcMain.on("open-pdf", (event, url) => {
   
     child.loadURL(url);
   });
+
+  ipcMain.on("notifications:markRead", () => {
+    store.set('shown_notification_counts', {});
+    setTrayIconDefault();
+  });
+  
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
