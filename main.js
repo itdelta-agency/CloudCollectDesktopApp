@@ -156,12 +156,16 @@ async function setTrayIconWithCount(unreadCount) {
 // --- Generate tray icon with badge ---
 
 async function generateTrayIconWithCount(basePngPath, count, outputIcoPath) {
+  const countStr = count.toString();
+  const fontSize = Math.max(40, 110 - (countStr.length - 1) * 25);
+
     const badgeSvg = `
     <svg width="256" height="256">
-      <circle cx="220" cy="36" r="28" fill="red" />
-      <text x="220" y="45" font-size="32" text-anchor="middle" fill="white" font-family="sans-serif">${count}</text>
+      <circle cx="192" cy="64" r="64" fill="red" />
+      <text x="192" y="76" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle" fill="white" font-family="sans-serif" font-weight="bold">${count}</text>
     </svg>
   `;
+
 
   const basePngBuffer = await sharp(basePngPath)
     .composite([{ input: Buffer.from(badgeSvg), top: 0, left: 0 }])
