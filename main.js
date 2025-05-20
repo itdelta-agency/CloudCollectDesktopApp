@@ -39,7 +39,7 @@ const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico'))
 //console.log('Icon is empty?', icon.isEmpty())
 
 
-const createWindow = () => {
+const createWindow = async () => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
         //icon: path.join(__dirname, 'assets/icon-256.png'),
@@ -78,6 +78,7 @@ const createWindow = () => {
 
     // Fetch notifications every 10 minutes
     setInterval(fetchNotifications, 60 * 1000 * 10);
+    await fetchNotifications();
 }
 
 // --- Main polling logic ---
@@ -92,8 +93,9 @@ async function fetchNotifications() {
         fetch(`${BACKEND_URL}/notifications/unread-count`, { method: 'GET', headers })
       ]);
 
-      const notifications = (await notificationsResponse.json()).data;
-      const unreadCount = (await unreadCountResponse.json()).unread_count;
+      const notifications = (await notificationsResponse.json()).data || [];
+      const unreadCount = (await unreadCountResponse.json()).unread_count || 0;
+      console.log("Unread notifications count", unreadCount);
 
       if (unreadCount === 0) {
         store.set('shown_notification_counts', {});
@@ -140,7 +142,7 @@ function showNotification(notifications, unreadCount) {
 // --- Tray icon control ---
 
 function setTrayIconDefault() {
-  tray.setImage(path.join(__dirname, 'assets', 'icon.ico'));
+  tray.setImage(nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')));
 }
 
 async function setTrayIconWithCount(unreadCount) {
