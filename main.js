@@ -146,7 +146,7 @@ function setTrayIconDefault() {
 }
 
 async function setTrayIconWithCount(unreadCount) {
-  const basePngPath = nativeImage.createFromPath(path.join(__dirname, 'assets/icon-256.png'));
+  const basePngPath = path.join(process.resourcesPath, 'icon-256.png');
   const outputPath = path.join(app.getPath('userData'), `tray-badge-${unreadCount}.ico`);
   await generateTrayIconWithCount(basePngPath, unreadCount, outputPath);
   tray.setImage(outputPath);
