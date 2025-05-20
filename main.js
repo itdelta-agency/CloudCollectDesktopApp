@@ -5,6 +5,10 @@ const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcM
 const { autoUpdater } = require("electron-updater")
 const path = require('node:path')
 const fs = require('node:fs')
+const sharp = require('sharp');
+const toIco = require('png-to-ico');
+const Store = require('electron-store');
+const store = new Store();
 const log = require("electron-log")
 
 log.transports.file.level = "info" // Logging level
@@ -76,51 +80,100 @@ const createWindow = () => {
     setInterval(fetchNotifications, 60 * 1000 * 10);
 }
 
+// --- Main polling logic ---
 async function fetchNotifications() {
     try {
-        // Get cookies from default app session
-        const cookies = await session.defaultSession.cookies.get({url: BACKEND_URL});
-        const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
+      const cookies = await session.defaultSession.cookies.get({ url: BACKEND_URL });
+      const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
+      const headers = { 'Cookie': cookieString, 'Accept': 'application/json' };
 
-        const headers = {'Cookie': cookieString, 'Accept': 'application/json'};
+      const [notificationsResponse, unreadCountResponse] = await Promise.all([
+        fetch(`${BACKEND_URL}/notifications`, { method: 'GET', headers }),
+        fetch(`${BACKEND_URL}/notifications/unread-count`, { method: 'GET', headers })
+      ]);
 
-        const [notificationsResponse, unreadCountResponse] = await Promise.all([
-            fetch(`${BACKEND_URL}/notifications`, {method: 'GET', headers}),
-            fetch(`${BACKEND_URL}/notifications/unread-count`, {method: 'GET', headers})
-        ]);
+      const notifications = (await notificationsResponse.json()).data;
+      const unreadCount = (await unreadCountResponse.json()).unread_count;
 
-        const [notificationsData, unreadCountData] = await Promise.all([
-            notificationsResponse.json(),
-            unreadCountResponse.json()
-        ]);
+      if (unreadCount === 0) {
+        store.set('shown_notification_counts', {});
+        setTrayIconDefault();
+      } else {
+        showNotification(notifications, unreadCount);
+        await setTrayIconWithCount(unreadCount);
+      }
 
-        showNotification(notificationsData.data, unreadCountData.unread_count);
     } catch (error) {
-        log.error("Error fetching notifications:", error);
+      log.error("Error fetching notifications:", error);
     }
 }
 
+// --- Show a single notification ---
 function showNotification(notifications, unreadCount) {
-    if (unreadCount > 0) {
-        const latestNotification = notifications[0]; // Get latest notification
+    if (!notifications || notifications.length === 0) return;
 
-        //Create OS desktop notifications
-        const notification = new Notification({
-            title: latestNotification ? latestNotification.title + `(${unreadCount} unread)`  : 'New Notification!',
-            body: latestNotification ? latestNotification.message : 'New notification!',
-            silent: false,
-            icon
-        });
+    const latest = notifications[0];
+    const shownMap = store.get('shown_notification_counts') || {};
+    const shownCount = shownMap[latest.id] || 0;
 
-        notification.show();
+    if (shownCount < 2) {
+      const notification = new Notification({
+        title: `${latest.title} (${unreadCount} unread)`,
+        body: latest.message,
+        silent: false,
+        icon
+      });
 
-        notification.on('click', () => {
-            if (mainWindow) {
-                mainWindow.show(); // Show window
-                mainWindow.focus();
-            }
-        });
+      notification.show();
+      shownMap[latest.id] = shownCount + 1;
+      store.set('shown_notification_counts', shownMap);
+
+      notification.on('click', () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.focus();
+        }
+      });
     }
+}
+
+// --- Tray icon control ---
+
+function setTrayIconDefault() {
+  tray.setImage(path.join(__dirname, 'assets', 'icon.ico'));
+}
+
+async function setTrayIconWithCount(unreadCount) {
+  const basePngPath = path.join(__dirname, 'assets/icon-256.png');
+  const outputPath = path.join(app.getPath('userData'), `tray-badge-${unreadCount}.ico`);
+  await generateTrayIconWithCount(basePngPath, unreadCount, outputPath);
+  tray.setImage(outputPath);
+}
+
+// --- Generate tray icon with badge ---
+
+async function generateTrayIconWithCount(basePngPath, count, outputIcoPath) {
+  const badgeSvg = `
+    <svg width="256" height="256">
+      <circle cx="220" cy="36" r="28" fill="red" />
+      <text x="220" y="45" font-size="32" text-anchor="middle" fill="white" font-family="sans-serif">${count}</text>
+    </svg>
+  `;
+
+  const base = await sharp(basePngPath)
+    .composite([{ input: Buffer.from(badgeSvg), top: 0, left: 0 }])
+    .png()
+    .toBuffer();
+
+    const tempPng = path.join(__dirname, "temp-tray-badge.png");
+    fs.writeFileSync(tempPng, base);
+  
+    const icoBuffer = await toIco([tempPng]);
+    fs.writeFileSync(outputIcoPath, icoBuffer);
+  
+    fs.unlinkSync(tempPng); // delete tmp PNG
+  
+    console.log(`Created icon: ${outputIcoPath}`);
 }
 
 const createTray = () => {
@@ -280,6 +333,12 @@ ipcMain.on("open-pdf", (event, url) => {
   
     child.loadURL(url);
   });
+
+ipcMain.on("notifications:markRead", () => {
+    store.set('shown_notification_counts', {});
+    setTrayIconDefault();
+});
+  
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
