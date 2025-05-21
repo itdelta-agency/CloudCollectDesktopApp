@@ -328,9 +328,6 @@ ipcMain.on("open-url", (event, url) => {
     console.log('open-url');
     log.info("open-url")
     shell.openExternal(url);
-
-    store.set('shown_notification_counts', {});
-    setTrayIconDefault();
 });
 
 ipcMain.on("open-pdf", (event, url) => {
