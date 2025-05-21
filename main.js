@@ -325,7 +325,12 @@ if (!gotTheLock) {
 }
 
 ipcMain.on("open-url", (event, url) => {
+    console.log('open-url');
+    log.info("open-url")
     shell.openExternal(url);
+
+    store.set('shown_notification_counts', {});
+    setTrayIconDefault();
 });
 
 ipcMain.on("open-pdf", (event, url) => {
@@ -348,6 +353,7 @@ ipcMain.on("open-pdf", (event, url) => {
   });
 
 ipcMain.on("notifications:markRead", () => {
+  console.log('mark read');
     log.info("Mark read notifications event!")
     store.set('shown_notification_counts', {});
     setTrayIconDefault();
