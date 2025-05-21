@@ -102,7 +102,7 @@ async function fetchNotifications() {
         store.set('shown_notification_counts', {});
         setTrayIconDefault();
       } else {
-        log.debug("Has notif!")
+        log.info("Has notif!")
         showNotification(notifications, unreadCount);
         await setTrayIconWithCount(unreadCount);
       }
@@ -144,7 +144,7 @@ function showNotification(notifications, unreadCount) {
 // --- Tray icon control ---
 
 function setTrayIconDefault() {
-  log.debug("setTrayIconDefault");
+  log.info("setTrayIconDefault");
   tray.setImage(nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')));
 }
 
@@ -153,7 +153,7 @@ async function setTrayIconWithCount(unreadCount) {
   const outputIcoPath = path.join(app.getPath('userData'), `tray-badge-${unreadCount}.ico`);
   await generateTrayIconWithCount(basePngPath, unreadCount, outputIcoPath);
   tray.setImage(nativeImage.createFromPath(outputIcoPath));
-  log.debug("setTrayIconWithCount");
+  log.info("setTrayIconWithCount");
 }
 
 // --- Generate tray icon with badge ---
@@ -348,7 +348,7 @@ ipcMain.on("open-pdf", (event, url) => {
   });
 
 ipcMain.on("notifications:markRead", () => {
-    log.debug("Mark read notifications event!")
+    log.info("Mark read notifications event!")
     store.set('shown_notification_counts', {});
     setTrayIconDefault();
 });
