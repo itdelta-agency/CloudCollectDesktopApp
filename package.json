@@ -1,6 +1,6 @@
 {
   "name": "cloudcollectapp",
-  "version": "1.1.39",
+  "version": "0.0.1",
   "description": "",
   "main": "main.js",
   "build": {
@@ -13,9 +13,9 @@
       "icon": "assets/icon.ico"
     },
     "appx": {
-      "publisher": "CN=YourPublisherFromPartnerCenter",
-      "publisherDisplayName": "Your Company Name",
-      "identityName": "CloudCollectApp",
+      "publisher": "CN=27A3596C-0577-4E38-B86F-EB1D91BCC0F6",
+      "publisherDisplayName": "Stohn Advokatanpartsselskab",
+      "identityName": "StohnAdvokatanpartsselska.CloudCollect",
       "backgroundColor": "#ffffff"
     }
   },
