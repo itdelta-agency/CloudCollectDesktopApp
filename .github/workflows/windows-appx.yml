@@ -21,6 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Config
+        run: |
+          echo '{ "BACKEND_URL": "${{ vars.BACKEND_URL }}", "FRONTEND_URL": "${{ vars.FRONTEND_URL }}" }' > config.json
+
       - name: Build .appx package
         run: npm run dist
 
