@@ -1,11 +1,11 @@
 {
-  "name": "cloudcollectapp",
+  "name": "cloudcollect",
   "version": "0.0.1",
   "description": "",
   "main": "main.js",
   "build": {
     "appId": "com.cloudcollect.desktop",
-    "productName": "CloudCollectApp",
+    "productName": "CloudCollect",
     "win": {
       "target": [
         "appx"
@@ -23,8 +23,8 @@
     "start": "electron .",
     "dist": "electron-builder",
     "dist:store": "electron-builder --win msix",
-    "pack": "electron-packager . CloudCollectApp --platform=win32 --arch=x64 --out=dist --overwrite",
-    "msix": "yes | electron-windows-store --input-directory dist/CloudCollectApp-win32-x64 --output-directory store-app --package-version 1.0.0.0 --package-name CloudCollectApp --identity-name CloudCollectApp --publisher CN=Your-Publisher --publisher-display-name \"Your Company\""
+    "pack": "electron-packager . CloudCollect --platform=win32 --arch=x64 --out=dist --overwrite",
+    "msix": "yes | electron-windows-store --input-directory dist/CloudCollect-win32-x64 --output-directory store-app --package-version 0.0.1 --package-name CloudCollect --identity-name StohnAdvokatanpartsselska.CloudCollect --publisher CN=27A3596C-0577-4E38-B86F-EB1D91BCC0F6 --publisher-display-name \"Stohn Advokatanpartsselskab\""
   },
   "keywords": [],
   "author": "",
