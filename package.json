@@ -1,6 +1,6 @@
 {
   "name": "cloudcollect",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "main.js",
   "build": {
@@ -16,7 +16,8 @@
       "publisher": "CN=27A3596C-0577-4E38-B86F-EB1D91BCC0F6",
       "publisherDisplayName": "Stohn Advokatanpartsselskab",
       "identityName": "StohnAdvokatanpartsselska.CloudCollect",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ffffff",
+      "assets": "assets/appx-tiles"
     }
   },
   "scripts": {
