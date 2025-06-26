@@ -16,8 +16,7 @@
       "publisher": "CN=27A3596C-0577-4E38-B86F-EB1D91BCC0F6",
       "publisherDisplayName": "Stohn Advokatanpartsselskab",
       "identityName": "StohnAdvokatanpartsselska.CloudCollect",
-      "backgroundColor": "#ffffff",
-      "assets": "assets/appx-tiles"
+      "backgroundColor": "#ffffff"
     }
   },
   "scripts": {
