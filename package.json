@@ -17,7 +17,7 @@
       "publisherDisplayName": "Stohn Advokatanpartsselskab",
       "identityName": "StohnAdvokatanpartsselska.CloudCollect",
       "backgroundColor": "#ffffff",
-      "customExtensionsPath": "build/extensions.xml"
+      "customManifestPath": "build/AppxManifest.xml"
     }
   },
   "scripts": {

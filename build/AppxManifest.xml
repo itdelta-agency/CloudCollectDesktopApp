@@ -1,51 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--suppress XmlUnusedNamespaceDeclaration -->
 <Package
-  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4"
-  IgnorableNamespaces="uap uap4">
+   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+   xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4"
+   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+   IgnorableNamespaces="uap uap4 desktop rescap">
 
-  <Identity
-    Name="${identityName}"
-    Publisher="${publisher}"
-    Version="${version}.0" />
+  <Identity Name="StohnAdvokatanpartsselska.CloudCollect"
+    ProcessorArchitecture="x64"
+    Publisher='CN=27A3596C-0577-4E38-B86F-EB1D91BCC0F6'
+    Version="0.0.3.0" />
 
   <Properties>
-    <DisplayName>${displayName}</DisplayName>
-    <PublisherDisplayName>${publisherDisplayName}</PublisherDisplayName>
-    <Logo>${logo}</Logo>
+    <DisplayName>CloudCollect</DisplayName>
+    <PublisherDisplayName>Stohn Advokatanpartsselskab</PublisherDisplayName>
+    <Description>CloudCollect</Description>
+    <Logo>assets\StoreLogo.png</Logo>
   </Properties>
 
-  <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="${minVersion}" MaxVersionTested="${maxVersionTested}" />
-  </Dependencies>
-
   <Resources>
-    ${resourceLanguages}
+    <Resource Language="en-US" />
   </Resources>
 
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14316.0" MaxVersionTested="10.0.14316.0" />
+  </Dependencies>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust"/>
+  </Capabilities>
+
   <Applications>
-    <Application Id="${applicationId}" Executable="${executable}" EntryPoint="Windows.FullTrustApplication">
+    <Application Id="StohnAdvokatanpartsselska.CloudCollect" Executable="app\CloudCollect.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        BackgroundColor="${backgroundColor}"
-        DisplayName="${displayName}"
-        Square150x150Logo="${square150x150Logo}"
-        Square44x44Logo="${square44x44Logo}"
-        Description="${description}">
-        ${lockScreen}
-        ${defaultTile}
-        ${splashScreen}
+       BackgroundColor="#ffffff"
+       DisplayName="CloudCollect"
+       Square150x150Logo="assets\Square150x150Logo.png"
+       Square44x44Logo="assets\Square44x44Logo.png"
+       Description="CloudCollect">
+        <uap:DefaultTile Wide310x150Logo="assets\Wide310x150Logo.png" />
       </uap:VisualElements>
 
+      <!-- 🔹 StartupTask Extension -->
       <uap4:Extension Category="windows.startupTask">
         <uap4:StartupTask TaskId="CloudCollectStartup" Enabled="true" />
       </uap4:Extension>
 
-      ${extensions}
     </Application>
   </Applications>
-
-  <Capabilities>
-    <Capability Name="internetClient" />
-  </Capabilities>
 </Package>
