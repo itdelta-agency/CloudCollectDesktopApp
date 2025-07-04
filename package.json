@@ -1,6 +1,6 @@
 {
   "name": "cloudcollect",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "main.js",
   "build": {
@@ -17,12 +17,7 @@
       "publisherDisplayName": "Stohn Advokatanpartsselskab",
       "identityName": "StohnAdvokatanpartsselska.CloudCollect",
       "backgroundColor": "#ffffff",
-      "startupTasks": [
-        {
-          "taskId": "CloudCollectStartup",
-          "enabled": true
-        }
-    ]
+      "customExtensionsPath": "build/extensions.xml"
     }
   },
   "scripts": {

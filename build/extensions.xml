@@ -1,0 +1,5 @@
+<Extensions xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10">
+  <Extension Category="windows.startupTask" Executable="${executable}" EntryPoint="Windows.FullTrustApplication">
+    <StartupTask TaskId="CloudCollectStartup" Enabled="true" />
+  </Extension>
+</Extensions>
