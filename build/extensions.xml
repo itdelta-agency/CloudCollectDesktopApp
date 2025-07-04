@@ -1,3 +1,8 @@
-<Extension Category="windows.startupTask" Executable="${executable}" EntryPoint="Windows.FullTrustApplication">
-  <StartupTask TaskId="CloudCollectStartup" Enabled="true" />
-</Extension>
+<Extensions>
+          <uap5:Extension Category="windows.startupTask">
+            <uap5:StartupTask
+              TaskId="MyStartupId"
+              Enabled="false"
+              DisplayName="Test startup" />
+          </uap5:Extension>
+</Extensions>

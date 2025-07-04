@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4"
+  IgnorableNamespaces="uap uap4">
+
+  <Identity
+    Name="${identityName}"
+    Publisher="${publisher}"
+    Version="${version}.0" />
+
+  <Properties>
+    <DisplayName>${displayName}</DisplayName>
+    <PublisherDisplayName>${publisherDisplayName}</PublisherDisplayName>
+    <Logo>${logo}</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="${minVersion}" MaxVersionTested="${maxVersionTested}" />
+  </Dependencies>
+
+  <Resources>
+    ${resourceLanguages}
+  </Resources>
+
+  <Applications>
+    <Application Id="${applicationId}" Executable="${executable}" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        BackgroundColor="${backgroundColor}"
+        DisplayName="${displayName}"
+        Square150x150Logo="${square150x150Logo}"
+        Square44x44Logo="${square44x44Logo}"
+        Description="${description}">
+        ${lockScreen}
+        ${defaultTile}
+        ${splashScreen}
+      </uap:VisualElements>
+
+      <uap4:Extension Category="windows.startupTask">
+        <uap4:StartupTask TaskId="CloudCollectStartup" Enabled="true" />
+      </uap4:Extension>
+
+      ${extensions}
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>
