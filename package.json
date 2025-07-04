@@ -16,7 +16,13 @@
       "publisher": "CN=27A3596C-0577-4E38-B86F-EB1D91BCC0F6",
       "publisherDisplayName": "Stohn Advokatanpartsselskab",
       "identityName": "StohnAdvokatanpartsselska.CloudCollect",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ffffff",
+      "startupTasks": [
+        {
+          "taskId": "CloudCollectStartup",
+          "enabled": true
+        }
+    ]
     }
   },
   "scripts": {

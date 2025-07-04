@@ -8,11 +8,6 @@ const log = require("electron-log")
 
 log.transports.file.level = "info" // Logging level
 
-app.setLoginItemSettings({
-    openAtLogin: true, //Start app when login to OS
-    args: ['--hidden'],
-});
-
 //app.setName('CloudCollect');
 
 
