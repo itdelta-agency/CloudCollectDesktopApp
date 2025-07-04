@@ -1,46 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--suppress XmlUnusedNamespaceDeclaration -->
 <Package
-   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
    xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4"
    xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
    xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
    IgnorableNamespaces="uap uap4 desktop rescap">
-
-  <Identity Name="StohnAdvokatanpartsselska.CloudCollect"
-    ProcessorArchitecture="x64"
-    Publisher='CN=27A3596C-0577-4E38-B86F-EB1D91BCC0F6'
-    Version="0.0.3.0" />
-
+  <!-- use single quotes to avoid double quotes escaping in the publisher value  -->
+  <Identity Name="${identityName}"
+            ProcessorArchitecture="${arch}"
+            Publisher='${publisher}'
+            Version="${version}" />
   <Properties>
-    <DisplayName>CloudCollect</DisplayName>
-    <PublisherDisplayName>Stohn Advokatanpartsselskab</PublisherDisplayName>
-    <Description>CloudCollect</Description>
-    <Logo>assets\StoreLogo.png</Logo>
+    <DisplayName>${displayName}</DisplayName>
+    <PublisherDisplayName>${publisherDisplayName}</PublisherDisplayName>
+    <Description>${description}</Description>
+    <Logo>${logo}</Logo>
   </Properties>
-
   <Resources>
-    <Resource Language="en-US" />
+    ${resourceLanguages}
   </Resources>
-
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14316.0" MaxVersionTested="10.0.14316.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="${minVersion}" MaxVersionTested="${maxVersionTested}" />
   </Dependencies>
-
   <Capabilities>
     <rescap:Capability Name="runFullTrust"/>
   </Capabilities>
-
   <Applications>
-    <Application Id="StohnAdvokatanpartsselska.CloudCollect" Executable="app\CloudCollect.exe" EntryPoint="Windows.FullTrustApplication">
+    <Application Id="${applicationId}" Executable="${executable}" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-       BackgroundColor="#ffffff"
-       DisplayName="CloudCollect"
-       Square150x150Logo="assets\Square150x150Logo.png"
-       Square44x44Logo="assets\Square44x44Logo.png"
-       Description="CloudCollect">
-        <uap:DefaultTile Wide310x150Logo="assets\Wide310x150Logo.png" />
+              BackgroundColor="${backgroundColor}"
+              DisplayName="${displayName}"
+              Square150x150Logo="${square150x150Logo}"
+              Square44x44Logo="${square44x44Logo}"
+              Description="${description}">
+        ${lockScreen}
+        ${defaultTile}
+        ${splashScreen}
       </uap:VisualElements>
 
       <!-- 🔹 StartupTask Extension -->
