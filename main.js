@@ -324,6 +324,15 @@ if (!gotTheLock) {
 
 }
 
+ipcMain.on('flush-storage', async () => {
+  try {
+    await session.defaultSession.flushStorageData();
+    log.info('Cookies flushed after login');
+  } catch (err) {
+    log.error('Error flushing storage:', err);
+  }
+});
+
 ipcMain.on("open-url", (event, url) => {
     console.log('open-url');
     log.info("open-url")
