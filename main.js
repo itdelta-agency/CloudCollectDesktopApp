@@ -14,6 +14,9 @@ log.transports.file.level = "info" // Logging level
 const configPath = path.join(app.getAppPath(), "config.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
 
+const userDataPath = app.getPath('userData');
+const cookiesPath = path.join(userDataPath, 'cookies-backup.json');
+
 log.info("CloudCollectDesktopApp statred!");
 log.info("FRONTEND_URL:", config.FRONTEND_URL);
 log.info("BACKEND_URL:", config.BACKEND_URL);
@@ -208,8 +211,8 @@ if (!gotTheLock) {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
-    app.whenReady().then(() => {
-
+    app.whenReady().then(async () => {
+        await restoreCookies(); // <--- Восстановить куки перед загрузкой окна
         setTimeout(() => {
             //Try use set timeout to fix app blinking
             createWindow();
@@ -228,12 +231,9 @@ if (!gotTheLock) {
 }
 
 ipcMain.on('flush-storage', async () => {
-  try {
-    await session.defaultSession.flushStorageData();
-    log.info('Cookies flushed after login');
-  } catch (err) {
-    log.error('Error flushing storage:', err);
-  }
+    //await session.defaultSession.flushStorageData();
+    log.info('flush-storage event handling...');
+    await backupCookies();
 });
 
 ipcMain.on("open-url", (event, url) => {
@@ -266,5 +266,49 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
 })
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+
+
+async function backupCookies() {
+  log.info('Backup cookies to json...');
+  try {
+    const cookies = await session.defaultSession.cookies.get({});
+    fs.writeFileSync(cookiesPath, JSON.stringify(cookies, null, 2));
+    log.info('Cookie backup done');
+  } catch (err) {
+    log.error('Failed to Backup cookie:', err);
+  }
+}
+
+
+async function restoreCookies() {
+  log.info('Restore cookies form json...');
+  if (!fs.existsSync(cookiesPath)) {
+    log.error('Path to cookies json not found:', cookiesPath);
+    return;
+  }
+
+  const cookies = JSON.parse(fs.readFileSync(cookiesPath));
+  for (const cookie of cookies) {
+    delete cookie.session;
+    delete cookie.hostOnly;
+
+    // Добавляем обязательное поле url
+    if (!cookie.url) {
+      const protocol = cookie.secure ? 'https://' : 'http://';
+      cookie.url = protocol + (cookie.domain?.replace(/^\./, '') || cookie.domain);
+    }
+
+    try {
+      await session.defaultSession.cookies.set(cookie);
+    } catch (err) {
+      log.error(`Failed to restore cookie ${cookie.name}:`, err);
+    }
+  }
+
+  log.info('Cookies restored from backup.');
+}
+
+app.on('before-quit', async () => {
+  log.info('before-quit event handling...');
+  await backupCookies();
+})
