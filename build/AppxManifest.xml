@@ -41,9 +41,14 @@
       </uap:VisualElements>
 
       <!-- 🔹 StartupTask Extension -->
-      <uap4:Extension Category="windows.startupTask">
-        <uap4:StartupTask TaskId="CloudCollectStartup" Enabled="true" />
-      </uap4:Extension>
+      <Extensions>
+        <desktop:Extension
+          Category="windows.startupTask"
+          Executable="${executable}"
+          EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="CloudCollectStartup" Enabled="true" DisplayName="CloudCollect" />
+            </desktop:Extension>
+        </Extensions>
 
     </Application>
   </Applications>

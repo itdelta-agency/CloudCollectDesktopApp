@@ -10,6 +10,14 @@ log.transports.file.level = "info" // Logging level
 
 //app.setName('CloudCollect');
 
+// ★ Автозапуск для MSIX/Appx
+let AutoLaunch, StartupTaskState;
+try {
+  ({ WindowsStoreAutoLaunch: AutoLaunch, StartupTaskState } = require('electron-winstore-auto-launch'));
+} catch (_) {
+  // dev-режим без пакета — просто молчим
+}
+
 
 const configPath = path.join(app.getAppPath(), "config.json");
 const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
@@ -213,6 +221,7 @@ if (!gotTheLock) {
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(async () => {
         await restoreCookies(); // <--- Восстановить куки перед загрузкой окна
+        await enableAutoLaunch(); //Попытаться включить автозапуск (мягко, с логами)
         setTimeout(() => {
             //Try use set timeout to fix app blinking
             createWindow();
@@ -312,3 +321,52 @@ app.on('before-quit', async () => {
   log.info('before-quit event handling...');
   await backupCookies();
 })
+
+// ★ Узнать статус автозапуска
+async function getAutoLaunchState() {
+  if (!app.isPackaged || !AutoLaunch) return null;
+  try {
+    // Если модуль знает ваш единственный StartupTask:
+    if (AutoLaunch.getStatus) return await AutoLaunch.getStatus(); // 0,1,2
+
+    // На случай другой версии API с перечислением задач:
+    if (AutoLaunch.getStartupTasks) {
+      const tasks = await AutoLaunch.getStartupTasks();
+      const t = tasks.find(x => x.taskId === 'CloudCollectStartup');
+      return t?.state ?? null; // 0,1,2
+    }
+  } catch (e) {
+    log.error('getAutoLaunchState error:', e);
+  }
+  return null;
+}
+
+// ★ Включить автозапуск (если не запрещён пользователем)
+async function enableAutoLaunch() {
+  if (!app.isPackaged || !AutoLaunch) return;
+  try {
+    const state = await getAutoLaunchState();
+    if (state === StartupTaskState?.disabled || state === 0) {
+      await (AutoLaunch.enable ? AutoLaunch.enable() : AutoLaunch.enableTask('CloudCollectStartup'));
+      log.info('Autolaunch enabled.');
+    } else if (state === StartupTaskState?.disabledByUser || state === 1) {
+      log.warn('Autolaunch disabled by user — включение программно запрещено.');
+    }
+  } catch (e) {
+    log.error('enableAutoLaunch error:', e);
+  }
+}
+
+// ★ Выключить автозапуск
+async function disableAutoLaunch() {
+  if (!app.isPackaged || !AutoLaunch) return;
+  try {
+    const state = await getAutoLaunchState();
+    if (state === StartupTaskState?.enabled || state === 2) {
+      await (AutoLaunch.disable ? AutoLaunch.disable() : AutoLaunch.disableTask('CloudCollectStartup'));
+      log.info('Autolaunch disabled.');
+    }
+  } catch (e) {
+    log.error('disableAutoLaunch error:', e);
+  }
+}
