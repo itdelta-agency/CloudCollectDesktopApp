@@ -2,6 +2,7 @@
 
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, Tray, Menu, nativeImage, session, Notification, ipcMain, shell, dialog } = require('electron')
+const os = require('os');
 const path = require('node:path')
 const fs = require('node:fs')
 const log = require("electron-log")
@@ -10,13 +11,13 @@ log.transports.file.level = "info" // Logging level
 
 //app.setName('CloudCollect');
 
-// ★ Автозапуск для MSIX/Appx
-let AutoLaunch, StartupTaskState;
-try {
-  ({ WindowsStoreAutoLaunch: AutoLaunch, StartupTaskState } = require('electron-winstore-auto-launch'));
-} catch (_) {
-  // dev-режим без пакета — просто молчим
-}
+// // ★ Автозапуск для MSIX/Appx
+// let AutoLaunch, StartupTaskState;
+// try {
+//   ({ WindowsStoreAutoLaunch: AutoLaunch, StartupTaskState } = require('electron-winstore-auto-launch'));
+// } catch (_) {
+//   // dev-режим без пакета — просто молчим
+// }
 
 
 const configPath = path.join(app.getAppPath(), "config.json");
@@ -39,7 +40,7 @@ const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico'))
 //console.log('Icon is empty?', icon.isEmpty())
 
 
-const createWindow = () => {
+const createWindow = ({ showNow }) => {
     // Create the browser window.
     mainWindow = new BrowserWindow({
         //icon: path.join(__dirname, 'assets/icon-256.png'),
@@ -56,12 +57,6 @@ const createWindow = () => {
         }
     })
 
-    mainWindow.once('ready-to-show', () => {
-        if (!process.argv.includes('--hidden')) {
-            mainWindow.show();
-          }
-    });
-
      mainWindow.on('close', (event) => {
         if (!isQuiting) {
          event.preventDefault();
@@ -75,6 +70,8 @@ const createWindow = () => {
 
     // and load the SPA
     mainWindow.loadURL(FRONTEND_URL)
+
+    if (showNow) mainWindow.once('ready-to-show', () => mainWindow.show());
 
     // Fetch notifications every 10 minutes
     setInterval(fetchNotifications, 60 * 1000 * 10);
@@ -221,10 +218,21 @@ if (!gotTheLock) {
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(async () => {
         await restoreCookies(); // <--- Восстановить куки перед загрузкой окна
-        await enableAutoLaunch(); //Попытаться включить автозапуск (мягко, с логами)
+        //await enableAutoLaunch(); //Попытаться включить автозапуск (мягко, с логами)
+
+              // 2) Логика показа:
+        //    а) если это ПЕРВЫЙ запуск после установки — показываем окно
+        //    б) иначе — прячемся (автозапуск)
+        //const isFirstRun = !fs.existsSync(firstRunFlag);
+
+        // Доп. эвристика: если аптайм системы < 120с, это очень похоже на автозапуск → не показываем
+        const looksLikeAutostart = os.uptime() < 60;
+        const shouldShowNow = !looksLikeAutostart;
+        
+
         setTimeout(() => {
             //Try use set timeout to fix app blinking
-            createWindow();
+            createWindow({ showNow: shouldShowNow });
           }, 1000);
        
         createAppMenu()
@@ -322,51 +330,51 @@ app.on('before-quit', async () => {
   await backupCookies();
 })
 
-// ★ Узнать статус автозапуска
-async function getAutoLaunchState() {
-  if (!app.isPackaged || !AutoLaunch) return null;
-  try {
-    // Если модуль знает ваш единственный StartupTask:
-    if (AutoLaunch.getStatus) return await AutoLaunch.getStatus(); // 0,1,2
+// // ★ Узнать статус автозапуска
+// async function getAutoLaunchState() {
+//   if (!app.isPackaged || !AutoLaunch) return null;
+//   try {
+//     // Если модуль знает ваш единственный StartupTask:
+//     if (AutoLaunch.getStatus) return await AutoLaunch.getStatus(); // 0,1,2
 
-    // На случай другой версии API с перечислением задач:
-    if (AutoLaunch.getStartupTasks) {
-      const tasks = await AutoLaunch.getStartupTasks();
-      const t = tasks.find(x => x.taskId === 'CloudCollectStartup');
-      return t?.state ?? null; // 0,1,2
-    }
-  } catch (e) {
-    log.error('getAutoLaunchState error:', e);
-  }
-  return null;
-}
+//     // На случай другой версии API с перечислением задач:
+//     if (AutoLaunch.getStartupTasks) {
+//       const tasks = await AutoLaunch.getStartupTasks();
+//       const t = tasks.find(x => x.taskId === 'CloudCollectStartup');
+//       return t?.state ?? null; // 0,1,2
+//     }
+//   } catch (e) {
+//     log.error('getAutoLaunchState error:', e);
+//   }
+//   return null;
+// }
 
-// ★ Включить автозапуск (если не запрещён пользователем)
-async function enableAutoLaunch() {
-  if (!app.isPackaged || !AutoLaunch) return;
-  try {
-    const state = await getAutoLaunchState();
-    if (state === StartupTaskState?.disabled || state === 0) {
-      await (AutoLaunch.enable ? AutoLaunch.enable() : AutoLaunch.enableTask('CloudCollectStartup'));
-      log.info('Autolaunch enabled.');
-    } else if (state === StartupTaskState?.disabledByUser || state === 1) {
-      log.warn('Autolaunch disabled by user — включение программно запрещено.');
-    }
-  } catch (e) {
-    log.error('enableAutoLaunch error:', e);
-  }
-}
+// // ★ Включить автозапуск (если не запрещён пользователем)
+// async function enableAutoLaunch() {
+//   if (!app.isPackaged || !AutoLaunch) return;
+//   try {
+//     const state = await getAutoLaunchState();
+//     if (state === StartupTaskState?.disabled || state === 0) {
+//       await (AutoLaunch.enable ? AutoLaunch.enable() : AutoLaunch.enableTask('CloudCollectStartup'));
+//       log.info('Autolaunch enabled.');
+//     } else if (state === StartupTaskState?.disabledByUser || state === 1) {
+//       log.warn('Autolaunch disabled by user — включение программно запрещено.');
+//     }
+//   } catch (e) {
+//     log.error('enableAutoLaunch error:', e);
+//   }
+// }
 
-// ★ Выключить автозапуск
-async function disableAutoLaunch() {
-  if (!app.isPackaged || !AutoLaunch) return;
-  try {
-    const state = await getAutoLaunchState();
-    if (state === StartupTaskState?.enabled || state === 2) {
-      await (AutoLaunch.disable ? AutoLaunch.disable() : AutoLaunch.disableTask('CloudCollectStartup'));
-      log.info('Autolaunch disabled.');
-    }
-  } catch (e) {
-    log.error('disableAutoLaunch error:', e);
-  }
-}
+// // ★ Выключить автозапуск
+// async function disableAutoLaunch() {
+//   if (!app.isPackaged || !AutoLaunch) return;
+//   try {
+//     const state = await getAutoLaunchState();
+//     if (state === StartupTaskState?.enabled || state === 2) {
+//       await (AutoLaunch.disable ? AutoLaunch.disable() : AutoLaunch.disableTask('CloudCollectStartup'));
+//       log.info('Autolaunch disabled.');
+//     }
+//   } catch (e) {
+//     log.error('disableAutoLaunch error:', e);
+//   }
+// }

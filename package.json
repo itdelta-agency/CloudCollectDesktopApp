@@ -1,6 +1,6 @@
 {
   "name": "cloudcollect",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "main.js",
   "build": {
@@ -37,7 +37,6 @@
     "electron-windows-store": "^2.1.0"
   },
   "dependencies": {
-    "electron-log": "^5.3.1",
-    "electron-winstore-auto-launch": "^2.0.6"
+    "electron-log": "^5.3.1"
   }
 }
