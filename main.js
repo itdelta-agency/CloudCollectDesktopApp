@@ -217,22 +217,12 @@ if (!gotTheLock) {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(async () => {
-        await restoreCookies(); // <--- Восстановить куки перед загрузкой окна
-        //await enableAutoLaunch(); //Попытаться включить автозапуск (мягко, с логами)
+        await restoreCookies();//restore cookies
 
-              // 2) Логика показа:
-        //    а) если это ПЕРВЫЙ запуск после установки — показываем окно
-        //    б) иначе — прячемся (автозапуск)
-        //const isFirstRun = !fs.existsSync(firstRunFlag);
-
-        // Доп. эвристика: если аптайм системы < 120с, это очень похоже на автозапуск → не показываем
-        const looksLikeAutostart = os.uptime() < 60;
-        const shouldShowNow = !looksLikeAutostart;
-        
-
+        //Show window on first launch only, hide for normal launches
         setTimeout(() => {
             //Try use set timeout to fix app blinking
-            createWindow({ showNow: shouldShowNow });
+            createWindow({ showNow: isFirstRun() });
           }, 1000);
        
         createAppMenu()
@@ -378,3 +368,17 @@ app.on('before-quit', async () => {
 //     log.error('disableAutoLaunch error:', e);
 //   }
 // }
+
+
+function isFirstRun() {
+  const flagFile = path.join(app.getPath('userData'), 'first-run.json');
+
+  if (fs.existsSync(flagFile)) {
+    log.info('Normal launch');
+    return false;
+  }
+
+  fs.writeFileSync(flagFile, JSON.stringify({ firstRun: false }));
+  log.info('First launch!');
+  return true;
+}
