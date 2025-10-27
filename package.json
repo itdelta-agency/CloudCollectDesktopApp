@@ -1,6 +1,6 @@
 {
   "name": "cloudcollect",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "",
   "main": "main.js",
   "build": {
@@ -18,7 +18,13 @@
       "identityName": "StohnAdvokatanpartsselska.CloudCollect",
       "backgroundColor": "#ffffff",
       "customManifestPath": "build/AppxManifest.xml"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "assets/icon-256.png",
+        "to": "icon-256.png"
+      }
+    ]
   },
   "scripts": {
     "start": "electron .",
