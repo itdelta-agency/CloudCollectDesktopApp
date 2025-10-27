@@ -37,6 +37,9 @@
     "electron-windows-store": "^2.1.0"
   },
   "dependencies": {
-    "electron-log": "^5.3.1"
+    "electron-log": "^5.3.1",
+    "electron-store": "^8.2.0",
+    "png-to-ico": "^2.1.8",
+    "sharp": "^0.34.1"
   }
 }
