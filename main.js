@@ -39,6 +39,7 @@ const BACKEND_URL = config.BACKEND_URL;
 
 let tray, mainWindow
 let isQuiting = false;
+let notificationsInterval;
 
 const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //ico for windows, 16×16, 32×32, 48×48, 64×64 and 256×256 in one file
 //console.log('Icon is empty?', icon.isEmpty())
@@ -76,9 +77,6 @@ const createWindow = ({ showNow }) => {
     mainWindow.loadURL(FRONTEND_URL)
 
     if (showNow) mainWindow.once('ready-to-show', () => mainWindow.show());
-
-    // Fetch notifications every 10 minutes
-    setInterval(fetchNotifications, 60 * 1000 * 10);
 }
 
 async function fetchNotifications() {
@@ -287,14 +285,22 @@ if (!gotTheLock) {
     app.whenReady().then(async () => {
         await restoreCookies();//restore cookies
 
-        //Show window on first launch only, hide for normal launches
-        setTimeout(() => {
-            //Try use set timeout to fix app blinking
-            createWindow({ showNow: isFirstRun() });
-          }, 1000);
-       
+        // //Show window on first launch only, hide for normal launches
+        // setTimeout(() => {
+        //     //Try use set timeout to fix app blinking
+            
+        //   }, 1000);
+
+
+        createWindow({ showNow: isFirstRun() });  
         createAppMenu()
         createTray()
+
+        // First notifications fetch
+        setTimeout(fetchNotifications, 3000);
+
+        // Regular notifications fetch - every 10 minutes
+        notificationsInterval = setInterval(fetchNotifications, 10 * 60 * 1000);
         
         app.on('activate', () => {
             // On macOS it's common to re-create a window in the app when the
@@ -394,6 +400,7 @@ async function restoreCookies() {
 app.on('before-quit', async () => {
   log.info('before-quit event handling...');
   await backupCookies();
+  if (notificationsInterval) clearInterval(notificationsInterval);
 })
 
 // // ★ Узнать статус автозапуска
