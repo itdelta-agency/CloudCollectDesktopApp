@@ -40,6 +40,7 @@ const BACKEND_URL = config.BACKEND_URL;
 let tray, mainWindow
 let isQuiting = false;
 let notificationsInterval;
+let isLoggedIn = false;
 
 const icon = nativeImage.createFromPath(path.join(__dirname, 'assets/icon.ico')) //ico for windows, 16×16, 32×32, 48×48, 64×64 and 256×256 in one file
 //console.log('Icon is empty?', icon.isEmpty())
@@ -284,6 +285,7 @@ if (!gotTheLock) {
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(async () => {
         await restoreCookies();//restore cookies
+        isLoggedIn = await checkAuth();
 
         // //Show window on first launch only, hide for normal launches
         // setTimeout(() => {
@@ -292,15 +294,17 @@ if (!gotTheLock) {
         //   }, 1000);
 
 
-        createWindow({ showNow: isFirstRun() });  
+        createWindow({ showNow: !isLoggedIn || isFirstRun() });  
         createAppMenu()
         createTray()
 
-        // First notifications fetch
-        setTimeout(fetchNotifications, 3000);
+        if (isLoggedIn) {
+          // First notifications fetch
+          setTimeout(fetchNotifications, 3000);
 
-        // Regular notifications fetch - every 10 minutes
-        notificationsInterval = setInterval(fetchNotifications, 10 * 60 * 1000);
+          // Regular notifications fetch - every 10 minutes
+          notificationsInterval = setInterval(fetchNotifications, 10 * 60 * 1000);
+        }
         
         app.on('activate', () => {
             // On macOS it's common to re-create a window in the app when the
@@ -464,4 +468,26 @@ function isFirstRun() {
   fs.writeFileSync(flagFile, JSON.stringify({ firstRun: false }));
   log.info('First launch!');
   return true;
+}
+
+async function checkAuth() {
+	try {
+		const cookies = await session.defaultSession.cookies.get({ url: BACKEND_URL });
+		const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
+		const headers = { Cookie: cookieString, Accept: 'application/json' };
+
+		const response = await fetch(`${BACKEND_URL}/auth/user`, { headers });
+
+		if (!response.ok) {
+			console.log('Not logged in:', response.status);
+			return false;
+		}
+
+		const data = await response.json();
+		console.log('User authenticated:', data);
+		return true;
+	} catch (error) {
+		console.error('Auth check failed:', error);
+		return false;
+	}
 }
