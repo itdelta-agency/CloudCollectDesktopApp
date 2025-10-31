@@ -315,10 +315,17 @@ if (!gotTheLock) {
 
 }
 
-ipcMain.on('flush-storage', async () => {
+ipcMain.on('login', async () => {
     //await session.defaultSession.flushStorageData();
-    log.info('flush-storage event handling...');
+    log.info('login event handling...');
     await backupCookies();
+    // fetch notifications after login
+    setTimeout(fetchNotifications, 3000);
+});
+
+ipcMain.on('logout', async () => {
+  log.info('logout event handling...');
+  setTrayIconDefault();
 });
 
 ipcMain.on("open-url", (event, url) => {
@@ -346,7 +353,6 @@ ipcMain.on("open-pdf", (event, url) => {
 
 
 ipcMain.on('notifications:markRead', () => {
-  console.log('mark read');
   log.info('Mark read notifications event!');
   store.set('shown_notification_counts', {});
   setTrayIconDefault();
